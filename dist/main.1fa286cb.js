@@ -106,11 +106,19 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"main.js":[function(require,module,exports) {
 var $siteList = $('.siteList');
 var $lastLi = $siteList.find('li.last');
-var hashMap = [{ logo: './image/acfun.jpeg', logoType: 'image', url: 'https://www.acfun.cn' }, { logo: 'B', logoType: 'text', url: 'https://www.bilibili.com/' }, { logo: 'G', logoType: 'text', url: 'https://github.com/' }];
+var x = localStorage.getItem('x');
+var xObject = JSON.parse(x); //把字符串重新变成对象
 
-hashMap.forEach(function (node) {
-    var $li = $('\n    <li>\n        <a href="' + node.url + '">\n        <div class="site">\n        <div class="logo">' + node.logo + '</div>\n        <div class="link">' + node.url + '</div>\n        </div>\n        </a>\n    </li>').insertBefore($lastLi);
-});
+var hashMap = xObject || [{ logo: './image/acfun.jpeg', logoType: 'image', url: 'https://www.acfun.cn' }, { logo: 'B', logoType: 'text', url: 'https://www.bilibili.com/' }, { logo: 'G', logoType: 'text', url: 'https://github.com/' }];
+
+var render = function render() {
+    $siteList.find('li:not(.last)').remove(); //唯独不要最后一个last
+    hashMap.forEach(function (node) {
+        var $li = $('\n        <li>\n            <a href="' + node.url + '">\n            <div class="site">\n            <div class="logo">' + node.logo[0] + '</div>\n            <div class="link">' + node.url + '</div>\n            </div>\n            </a>\n        </li>').insertBefore($lastLi);
+    });
+};
+
+render();
 
 $('.addButton').on('click', function () {
     var url = window.prompt('请输入你要添加的网址');
@@ -118,8 +126,14 @@ $('.addButton').on('click', function () {
         //判断是否以http开头
         url = 'https://' + url;
     }
-    var $li = $('<li><a href="' + url + '"><div class="site">\n    <div class="logo">' + url[0] + '</div>\n    <div class="link">' + url + '</div></div></a></li>').insertBefore($lastLi);
+    hashMap.push({ logo: url[0], logoType: 'text', url: url });
+    render();
 });
+
+window.onbeforeunload = function () {
+    var String = JSON.stringify(hashMap); //这可以把一个对象变成字符串
+    window.localStorage.setItem('x', String);
+};
 },{}],"..\\..\\..\\..\\AppData\\Local\\Yarn\\Data\\global\\node_modules\\parcel\\src\\builtins\\hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -149,7 +163,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64705' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '50903' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
